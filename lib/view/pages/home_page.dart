@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker/controller/expanse_provider.dart';
-import 'package:tracker/models/expanse_model.dart';
+import 'package:tracker/controller/provider/expanse_provider.dart';
+import 'package:tracker/controller/provider/fliter_provider.dart';
+import 'package:tracker/repository/models/expanse_model.dart';
 import 'package:uuid/uuid.dart';
 
 class HomePage extends ConsumerWidget {
@@ -12,6 +13,37 @@ class HomePage extends ConsumerWidget {
     final expanses = ref.watch(expanseProvider);
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              ref.read(expanseProvider.notifier).clearAllExpanses();
+            },
+            icon: Icon(
+              Icons.clear_all,
+            ),
+          ),
+          PopupMenuButton<FilterType>(
+            icon: Icon(Icons.filter_list),
+            onSelected: (value) =>
+                ref.read(filterProvider.notifier).state = value,
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: FilterType.all,
+                  child: Text("All"),
+                ),
+                PopupMenuItem(
+                  value: FilterType.today,
+                  child: Text('Today'),
+                ),
+                PopupMenuItem(
+                  value: FilterType.thisWeek,
+                  child: Text('This Week'),
+                ),
+              ];
+            },
+          )
+        ],
         title: Text("Expanse Tracker"),
       ),
       body: expanses.isEmpty
@@ -19,32 +51,32 @@ class HomePage extends ConsumerWidget {
               child: Text('No expanses yet..'),
             )
           : ListView.builder(
-            itemCount: expanses.length,
-            itemBuilder: (context, index) {
-              final expanse = expanses[index];
-              return ListTile(
-                title: Text(expanse.title),
-                subtitle: Text("${expanse.amount} so'm "),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          showExpanseDialog(context, ref,
-                              isEdit: true, expanse: expanse);
-                        },
-                        icon: Icon(Icons.edit)),
-                    IconButton(
-                        onPressed: () {
-                          ref
-                              .read(expanseProvider.notifier)
-                              .deleteExpanse(expanse.id);
-                        },
-                        icon: Icon(Icons.delete)),
-                  ],
-                ),
-              );
-            }),
+              itemCount: expanses.length,
+              itemBuilder: (context, index) {
+                final expanse = expanses[index];
+                return ListTile(
+                  title: Text(expanse.title),
+                  subtitle: Text("${expanse.amount} so'm "),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            showExpanseDialog(context, ref,
+                                isEdit: true, expanse: expanse);
+                          },
+                          icon: Icon(Icons.edit)),
+                      IconButton(
+                          onPressed: () {
+                            ref
+                                .read(expanseProvider.notifier)
+                                .deleteExpanse(expanse.id);
+                          },
+                          icon: Icon(Icons.delete)),
+                    ],
+                  ),
+                );
+              }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showExpanseDialog(
           context,
