@@ -10,7 +10,22 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final filter = ref.watch(filterProvider);
     final expanses = ref.watch(expanseProvider);
+    final filteredExpanses = expanses.where((expanse) {
+      final now = DateTime.now();
+      if (filter == FilterType.today) {
+        return expanse.date.year == now.year &&
+            expanse.date.month == now.month &&
+            expanse.date.day == now.day;
+      } else if (filter == FilterType.thisWeek) {
+        final weekAgo = now.subtract(
+          Duration(days: 7),
+        );
+        return expanse.date.isAfter(weekAgo);
+      }
+      return true;
+    }).toList();
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -19,7 +34,7 @@ class HomePage extends ConsumerWidget {
               ref.read(expanseProvider.notifier).clearAllExpanses();
             },
             icon: Icon(
-              Icons.clear_all,
+              Icons.delete_forever,
             ),
           ),
           PopupMenuButton<FilterType>(
@@ -51,12 +66,13 @@ class HomePage extends ConsumerWidget {
               child: Text('No expanses yet..'),
             )
           : ListView.builder(
-              itemCount: expanses.length,
+              itemCount: filteredExpanses.length,
               itemBuilder: (context, index) {
-                final expanse = expanses[index];
+                final expanse = filteredExpanses[index];
                 return ListTile(
                   title: Text(expanse.title),
-                  subtitle: Text("${expanse.amount} so'm "),
+                  subtitle: Text(
+                      "${expanse.amount} so'm  ${expanse.date.day}/${expanse.date.month}/${expanse.date.year}"),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
