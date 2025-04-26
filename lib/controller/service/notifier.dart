@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:tracker/repository/models/expanse_model.dart';
+import 'package:tracker/repo/models/expanse_model.dart';
 
 class ExpanseNotifier extends StateNotifier<List<ExpanseModel>>{
   ExpanseNotifier() : super([]){

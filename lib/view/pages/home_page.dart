@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracker/controller/provider/expanse_provider.dart';
 import 'package:tracker/controller/provider/fliter_provider.dart';
-import 'package:tracker/repository/models/expanse_model.dart';
+import 'package:tracker/repo/models/category.dart';
+import 'package:tracker/repo/models/expanse_model.dart';
 import 'package:tracker/view/widgets/stats_widget.dart';
 import 'package:uuid/uuid.dart';
 
@@ -155,7 +156,7 @@ class HomePage extends ConsumerWidget {
                   id: isEdit ? expanse!.id : Uuid().v4(),
                   title: title,
                   amount: amount,
-                  date: DateTime.now());
+                  date: DateTime.now(), categoryType: CategoryType.food);
               if (isEdit) {
                 ref.read(expanseProvider.notifier).updateExpanse(newExpanse);
               } else {

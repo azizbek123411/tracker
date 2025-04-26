@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:tracker/repository/models/expanse_model.dart';
+import 'package:tracker/repo/models/expanse_model.dart';
 
 class StatsWidget extends StatelessWidget {
   final List<ExpanseModel> expanses;
@@ -31,8 +31,8 @@ class StatsWidget extends StatelessWidget {
     }
 
     return Padding(
-      padding:EdgeInsets.all(10), 
-      child:BarChart(
+      padding:EdgeInsets.all(20), 
+      child:BarChart(        
         BarChartData(
           alignment: BarChartAlignment.spaceAround,
           titlesData: FlTitlesData(
@@ -72,6 +72,7 @@ class StatsWidget extends StatelessWidget {
               x: index,
               barRods: [
                 BarChartRodData(
+                  
                   toY: value,
                   color: Colors.purpleAccent,
                   width: 16,
