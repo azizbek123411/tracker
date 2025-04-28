@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracker/controller/provider/expanse_provider.dart';
 import 'package:tracker/controller/provider/fliter_provider.dart';
-import 'package:tracker/repo/models/category.dart';
 import 'package:tracker/repo/models/expanse_model.dart';
 import 'package:tracker/view/widgets/stats_widget.dart';
 import 'package:uuid/uuid.dart';
+
+import '../widgets/expanse_dialog.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -124,49 +125,18 @@ class HomePage extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(isEdit ? "Edit Expanse" : "Add Expanse"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(labelText: "Title"),
-            ),
-            TextField(
-              controller: amountController,
-              keyboardType: TextInputType.numberWithOptions(),
-              decoration: InputDecoration(labelText: "Amount"),
-            ),
-          ],
+      builder: (context) =>ExpanseDialog(
+        isEdit: isEdit,
+        expanse: expanse ?? ExpanseModel(
+          id: Uuid().v4(),
+          title: titleController.text.trim(),
+          amount:  double.tryParse(amountController.text.trim()) ?? 0.0,
+          date: DateTime.now(), 
+      
         ),
-        actions: [
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () => Navigator.pop(context),
-          ),
-          TextButton(
-            onPressed: () {
-              final title = titleController.text.trim();
-              final amount =
-                  double.tryParse(amountController.text.trim()) ?? 0.0;
-              if (title.isEmpty || amount <= 0) return;
-
-              final newExpanse = ExpanseModel(
-                  id: isEdit ? expanse!.id : Uuid().v4(),
-                  title: title,
-                  amount: amount,
-                  date: DateTime.now(), categoryType: CategoryType.food);
-              if (isEdit) {
-                ref.read(expanseProvider.notifier).updateExpanse(newExpanse);
-              } else {
-                ref.read(expanseProvider.notifier).addExpanse(newExpanse);
-              }
-              Navigator.pop(context);
-            },
-            child: Text(isEdit ? "Update" : "Add"),
-          ),
-        ],
+        titleController: titleController,
+        amountController: amountController,
+        ref: ref,
       ),
     );
   }
